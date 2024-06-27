@@ -1,5 +1,8 @@
 {
-  "require": {
-    "sendgrid/sendgrid": "~7"
-  }
+    "autoload": {
+        "psr-4": { "Talishar\\": "src/" }
+    },
+    "require": {
+        "sendgrid/sendgrid": "~7"
+    }
 }

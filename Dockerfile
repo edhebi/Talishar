@@ -1,21 +1,24 @@
-FROM php:8.2.1-apache
+FROM php:8.3.8-apache
 
-RUN apt-get update && apt-get install -y libbz2-dev
-RUN apt-get update && apt-get install -y libc-client-dev libkrb5-dev && rm -r /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y libxslt-dev
-RUN apt-get update && apt-get install -y libssh2-1-dev
-RUN apt-get install -y libzip-dev
+# Runtime dependencies
 
-RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install imap
+RUN apt-get update && apt-get install -y \
+    libc-client-dev libkrb5-dev libxslt-dev \
+    libbz2-dev libzip-dev \
+    libssh2-1-dev
 
-RUN pecl install -o -f redis \
+RUN rm -r /var/lib/apt/lists/*
+COPY --from=composer/composer:2.7.7-bin /composer /usr/bin/composer
+
+# Extensions
+
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl
+RUN docker-php-ext-install imap zip bz2 shmop mysqli pdo pdo_mysql
+
+RUN pecl install -of redis ssh2-1.4 \
     && rm -rf /tmp/pear \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis ssh2
 
-RUN docker-php-ext-install zip mysqli pdo pdo_mysql shmop bz2
+# Configuration
 
-RUN pecl install ssh2-1.4 \
-    && docker-php-ext-enable ssh2
-
-RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+RUN cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"

@@ -1,9 +1,7 @@
 version: "3.7"
 services:
   web-server:
-    build:
-      dockerfile: Dockerfile
-      context: .
+    build: .
     restart: always
     volumes:
       - "./:/var/www/html/game"
@@ -21,6 +19,7 @@ services:
       REDIS_HOST: "app_redis"
       REDIS_ENABLED: true
       DOMAIN: "localhost"
+
   mysql-server:
     image: mysql:latest
     restart: always
@@ -33,6 +32,7 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
       - ./Database:/docker-entrypoint-initdb.d
+
   phpmyadmin:
     image: phpmyadmin:latest
     restart: always
@@ -42,10 +42,12 @@ services:
       PMA_PASSWORD: "secret"
     ports:
       - "5001:80"
+
   redis:
     image: redis:7.0
     container_name: app_redis
     ports:
       - "6382:6379"
+
 volumes:
   mysql-data:

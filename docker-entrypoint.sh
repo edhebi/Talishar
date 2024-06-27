@@ -1,1 +1,1 @@
-apache2-foreground
+composer install && apache2-foreground
